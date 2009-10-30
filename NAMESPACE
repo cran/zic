@@ -1,0 +1,2 @@
+useDynLib(zic)
+export(zic, zic.ssvs)
