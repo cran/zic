@@ -78,19 +78,13 @@
 
 #   include <limits>
     typedef __int64 CVM_LONGEST_INT;
-
-#   if defined(_WIN64)
-        typedef unsigned long long CVM_PTR_WRAPPER;
-#   else
-        typedef unsigned long CVM_PTR_WRAPPER;
-#   endif
-
 #   define CVM_VSNPRINTF vsnprintf_s
 #   define CVM_VSNPRINTF_S_DEFINED
 #   define CVM_STRCPY_S_DEFINED
+#endif
 
 // GCC settings
-#elif defined (__GNUC__)
+#if defined (__GNUC__)
 #   ifdef __MINGW32__               // Dev-C++ under Win32 assumed here
 #       define WIN32_LEAN_AND_MEAN
 #       include <windows.h>
@@ -110,14 +104,14 @@ typedef long long CVM_LONGEST_INT;
 
 #   if defined(__AMD64__)
         typedef unsigned long long CVM_PTR_WRAPPER;
+#   elif defined(__MINGW64__)
+        typedef unsigned long long CVM_PTR_WRAPPER;
 #   else
         typedef unsigned long CVM_PTR_WRAPPER;
 #   endif
 
 #   define CVM_VSNPRINTF vsnprintf
 
-#else
-#   error "Unsupported compiler"
 #endif
 
 #include <stdlib.h>
@@ -356,13 +350,6 @@ template<typename TR, typename TM>
 CVM_API void __cond_num (const TM& mArg, TR& dCondNum) throw (cvmexception);
 template <typename TM>
 void __low_up (TM& m, int* nPivots) throw (cvmexception);
-
-template <typename TR>
-CVM_API void __randomize (TR* mpD, int mnSize, int mnIncr, TR dFrom, TR dTo);
-template <typename TC, typename TR>
-CVM_API void __randomize_real (TC* mpD, int mnSize, int mnIncr, TR dFrom, TR dTo);
-template <typename TC, typename TR>
-CVM_API void __randomize_imag (TC* mpD, int mnSize, int mnIncr, TR dFrom, TR dTo);
 
 template <typename TR, typename TM, typename TV>
 CVM_API void __ger (TM& m, const TV& vCol, const TV& vRow, TR dAlpha);
@@ -1140,37 +1127,6 @@ inline T operator / (U u, const type_proxy<T,TR>& p)
 {
     return T(u) / p.val();
 }
-
-
-// random numbers helper class
-template <typename T>
-class Randomizer
-{
-    T mdUMax;
-
-    Randomizer ()
-        : mdUMax (static_cast<T>(RAND_MAX))
-    {
-        srand (static_cast<unsigned int>(time(NULL)));
-    }
-
-    T _get (T dFrom, T dTo)
-    {
-        const T dMin = _cvm_min<T>(dFrom, dTo);
-        const T dMax = _cvm_max<T>(dFrom, dTo);
-        unsigned int nr = static_cast<unsigned int>(rand());
-        return dMin + static_cast<T>(nr) * (dMax - dMin) / mdUMax;
-    }
-
-public:
-    ~Randomizer () {}
-
-    static T get (T dFrom, T dTo)
-    {
-        static Randomizer r;
-        return r._get (dFrom, dTo);
-    }
-};
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // basic_array
@@ -2051,12 +2007,6 @@ public:
         if ((bLeft ? m.msize() != v.mnSize : m.nsize() != v.mnSize) ||
             (bLeft ? m.nsize() != this -> mnSize : m.msize() != this -> mnSize)) throw cvmexception (CVM_SIZESMISMATCH);
         m._gbmv (bLeft, dAlpha, v, dBeta, *this);
-        return *this;
-    }
-
-    basic_rvector& randomize (TR dFrom, TR dTo)
-    {
-        __randomize<TR>(this -> mpD, this -> mnSize, this -> mnIncr, dFrom, dTo);
         return *this;
     }
 };
@@ -3028,12 +2978,6 @@ public:
         return *this;
     }
 
-    basic_rmatrix& randomize (TR dFrom, TR dTo)
-    {
-        this -> _randomize (dFrom, dTo);
-        return *this;
-    }
-
     // 2-norm (maximum singular value)
     virtual TR norm2() const
     {
@@ -3178,18 +3122,6 @@ protected:
         static const TR zero = TR(0.);
         static const TR one = TR(1.);
         this -> _gemv (bLeft, one, v, zero, vRes);
-    }
-
-    virtual void _randomize (TR dFrom, TR dTo)
-    {
-        if (this -> _continuous())
-        {
-            __randomize<TR> (this -> mpD, this -> mnSize, this -> mnIncr, dFrom, dTo);
-        }
-        else for (int i = 0; i < this -> mnN; ++i)
-        {
-            __randomize<TR> (this -> mpD + this -> mnLD * i, this -> mnM, this -> mnIncr, dFrom, dTo);
-        }
     }
 
     // QR decomposition
@@ -3702,14 +3634,6 @@ public:
         return *this;
     }
 
-    basic_srmatrix& randomize (TR dFrom, TR dTo)
-    {
-        this -> _randomize (dFrom, dTo);
-        return *this;
-    }
-
-  
-
     virtual void _solve (const RVector& vB, RVector& vX, TR& dErr, const TR* pLU, const int* pPivots) const throw (cvmexception)
     {
         vX = vB;
@@ -3940,48 +3864,6 @@ protected:
         }
     }
 
-    void _b_for_each (TC d, bool bRandom, bool bReal, TR dFrom, TR dTo)         // fills the content, doesn't touch head and tail
-    {
-        int i, jc, ju, jl;
-        const int nCol = 1 + mnKL + mnKU;
-        TC* mpD = this -> _p();
-        const int mnN = this -> _nsize();
-        for (int j = 0; j < mnN; ++j)
-        {
-            jc = j * nCol;
-            ju = mnKU - j;
-            jl = ju + mnN;
-            for (i = 0; i < nCol; ++i)
-            {
-                if (i >= ju && i < jl)
-                {
-                    CVM_ASSERT(mpD, (jc + i + 1) * sizeof(TC))
-                    if (bRandom)
-                    {
-                        TR* pD = bReal ? __get_real_p<TR> (mpD + (jc + i)) : __get_imag_p<TR> (mpD + (jc + i));
-                        *pD = Randomizer<TR>::get(dFrom, dTo);
-                    }
-                    else
-                    {
-                        mpD[jc + i] = d;
-                    }
-                }
-            }
-        }
-    }
-
-    void _bset (TC d)                                           // fills the content, doesn't touch head and tail
-    {
-        static const TR zero = TR(0.);
-        this -> _b_for_each (d, false, false, zero, zero);
-    }
-
-    void _b_randomize (bool bReal, TR dFrom, TR dTo)            // fills the content, doesn't touch head and tail
-    {
-        static const TC zero(0.);
-        this -> _b_for_each (zero, true, bReal, dFrom, dTo);
-    }
-
     TR _bnorm1() const                                          // 1-norm
     {
         int i, j;
@@ -4038,11 +3920,6 @@ protected:
             }
         }
         return rNorm;
-    }
-
-    void _bvanish()
-    {
-        this -> _bset (TC(0.));
     }
 
     type_proxy<TC,TR> _b_ij_proxy_val (int i, int j)            // zero based
@@ -4609,12 +4486,6 @@ public:
         return *this;
     }
 
-    basic_srbmatrix& randomize (TR dFrom, TR dTo)
-    {
-        this -> _b_randomize (true, dFrom, dTo);
-        return *this;
-    }
-
     // ATTENTION!!! This is not a good idea to use the following function. It's provided for
     // overriding of basic_rmatrix<TR>::mult only
     // this = m1 * m2
@@ -4825,16 +4696,6 @@ protected:
         this -> _mbassign(m);
     }
 
-    virtual void _set (TR d)
-    {
-        this -> _bset(d);
-    }
-
-    virtual void _vanish()
-    {
-        this -> _bvanish();
-    }
-
     // zero based
     virtual type_proxy<TR,TR> _ij_proxy_val (int i, int j)
     {
@@ -4901,11 +4762,6 @@ protected:
         static const TR zero(0.);
         static const TR one(1.);
         this -> _gbmv (bLeft, one, v, zero, vRes);
-    }
-
-    virtual void _randomize (TR dFrom, TR dTo)
-    {
-        __randomize<TR>(this -> mpD, this -> mnSize, this -> mnIncr, dFrom, dTo);
     }
 
     virtual void _low_up (int* nPivots) throw (cvmexception)
@@ -5371,12 +5227,6 @@ public:
         return *this;
     }
 
-    basic_srsmatrix& randomize (TR dFrom, TR dTo)
-    {
-        this -> _randomize (dFrom, dTo);
-        return *this;
-    }
-
     // matrix equilibration (useful for further solve and solve_lu calling)
     // returns true if equilibration was needed and performed
     bool equilibrate (RVector& vScalings, RVector& vB) throw (cvmexception)
@@ -5507,12 +5357,6 @@ protected:
         if (vRes.get() == pDm) mTmp << *this;
         __symv<TR, basic_srsmatrix, RVector> (vRes.get() == pDm ? mTmp : *this, one, 
                                               vRes.get() == pDv ? vTmp : v, zero, vRes);
-    }
-
-    virtual void _randomize (TR dFrom, TR dTo)
-    {
-        this -> BaseSRMatrix::_randomize (dFrom, dTo);
-        this -> _flip();
     }
 
     virtual void _solve (const RVector& vB, RVector& vX, TR& dErr, const TR* pLU, const int* pPivots) const throw (cvmexception)

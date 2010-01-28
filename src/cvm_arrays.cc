@@ -70,14 +70,4 @@ CVM_API void __subtract<double>(double* mpD, int mnSize, int mnIncr, const doubl
     DAXPY (&mnSize, &mone, pv, &nIncr, mpD, &mnIncr);
 }
 
-template<>
-CVM_API void __randomize<double> (double* mpD, int mnSize, int mnIncr, double dFrom, double dTo)
-{
-    const int nSize = mnSize * mnIncr;
-    for (int i = 0; i < nSize; i += mnIncr)
-    {
-        mpD[i] = Randomizer<double>::get (dFrom, dTo);
-    }
-}
-
 CVM_NAMESPACE_END
