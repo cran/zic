@@ -81,10 +81,10 @@
 #   define CVM_VSNPRINTF vsnprintf_s
 #   define CVM_VSNPRINTF_S_DEFINED
 #   define CVM_STRCPY_S_DEFINED
-#endif
 
-// GCC settings
-#if defined (__GNUC__)
+
+#else // GCC settings (and Sun)
+
 #   ifdef __MINGW32__               // Dev-C++ under Win32 assumed here
 #       define WIN32_LEAN_AND_MEAN
 #       include <windows.h>
@@ -100,7 +100,7 @@
 #   define CVM_STDEXT stdext
 #   define CVM_BLOCKS_MAP std::map
 
-typedef long long CVM_LONGEST_INT;
+__extension__ typedef long long CVM_LONGEST_INT;
 
 #   if defined(__AMD64__)
         typedef unsigned long long CVM_PTR_WRAPPER;

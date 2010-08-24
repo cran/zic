@@ -88,9 +88,9 @@ void ZipModel::eta_sample( void )
   int ifault;                      // return value, 0: successful initialisation, 1: not enough starting points
                                    // 2: ns is less than m, 3: no abscissae to left of mode (if lb = false),
                                    // 4: no abscissae to right of mode (if ub = false), 5: non-log-concavity detected
-  int iwv[n_max+7];                // real-valued working space (size: n_max+7)
+  int iwv[17];                     // real-valued working space (size: n_max+7)
   int* iwv_p = iwv;                // respective pointer
-  double rwv[6*n_max+15];          // real-valued working space (size: 6*n_max+15)
+  double rwv[75];                  // real-valued working space (size: 6*n_max+15)
   double* rwv_p = rwv;             // respective pointer
 
   double draw;
