@@ -135,19 +135,11 @@ void ZipModel::eta_sample( void )
       // intializing ARS
       ars::initial_( &n_max, &n_start, &emax, a, f, fprime, &lb, &xlb, &ub, &xub, &ifault, iwv_p, rwv_p );
       
-      if( ifault == 0 )
-	{
-	  // sampling
-	  typedef double (Rndgen::*memfp)( void );
-	  memfp uniform_gen = &Rndgen::uniform;
-	  ars::sample_( iwv_p, rwv_p, &fn_eval, &fnpar, &draw, &ifault, uniform_gen, &rnd );
-	  eta[i] = draw;
-	}
-      else
-	{
-	  cerr << "Error number " << ifault << endl;
-	  exit(1);
-	}
+      // sampling
+      typedef double (Rndgen::*memfp)( void );
+      memfp uniform_gen = &Rndgen::uniform;
+      ars::sample_( iwv_p, rwv_p, &fn_eval, &fnpar, &draw, &ifault, uniform_gen, &rnd );
+      eta[i] = draw;
     }
 }
 

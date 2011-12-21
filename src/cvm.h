@@ -100,7 +100,7 @@
 #   define CVM_STDEXT stdext
 #   define CVM_BLOCKS_MAP std::map
 
-__extension__ typedef long long CVM_LONGEST_INT;
+__extension__ typedef long CVM_LONGEST_INT;
 
 #   if defined(__AMD64__)
         typedef unsigned long long CVM_PTR_WRAPPER;
@@ -1149,7 +1149,7 @@ public:
     typedef value_type& reference;
     typedef const value_type& const_reference;
     typedef size_t size_type;
-    typedef ptrdiff_t difference_type;
+    typedef std::ptrdiff_t difference_type;
     typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
     typedef std::reverse_iterator<iterator> reverse_iterator;
 
