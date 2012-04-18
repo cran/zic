@@ -8,7 +8,7 @@
   is taken from Riphahn et al. (2003) and is a subsample of the German
   Socioeconomic Panel (SOEP). In contrast to Riphahn et al. (2003) only
   male individuals from the last wave are considered. See Jochmann
-  (2009) for further details.
+  (2012) for further details.
 }
 \usage{data(docvisits)}
 \format{
@@ -32,16 +32,17 @@
     \item{addon}{1 if add-on insurance, 0 otherwise}               
   }
 }
+
 \references{
-  Jochmann, M. (2009). ``What Belongs Where? Variable Selection for Zero-Inflated Count Models with an Application to the Demand for
-  Health Care'', available at: \url{http://personal.strath.ac.uk/markus.jochmann}.
+  Jochmann, M. (2012). ``What Belongs Where? Variable Selection for Zero-Inflated Count Models with an Application to the Demand for
+  Health Care''. Available at: \url{http://www.staff.ncl.ac.uk/markus.jochmann}.
   
-  Riphahn et al. (2003),
+  Riphahn, R. T., Wambach, A., Million, A. (2003). 
   ``Incentive Effects in the Demand for Health Care: A Bivariate Panel Count Data Estimation'',
-  \emph{Journal of Applied Econometrics}, 18, 387-405.
+  \emph{Journal of Applied Econometrics}, 18, 387--405.
   
-  Wagner et al. (2007),
+  Wagner, G. G., Frick, J. R., Schupp, J. (2007).
   ``The German Socio-Economic Panel Study (SOEP) -- Scope, Evolution and Enhancements'',
-  \emph{Schmollers Jahrbuch}, 127, 139-169.
+  \emph{Schmollers Jahrbuch}, 127, 139--169.
 }
 \keyword{datasets}

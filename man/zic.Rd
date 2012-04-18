@@ -9,71 +9,62 @@
 }
 
 \usage{
-zic(formula, data, bbar, dbar, ebar, fbar, n.burnin, n.mcmc, n.thin)
+zic(formula, data, a0, b0, c0, d0, e0, f0, 
+    n.burnin, n.mcmc, n.thin, tune = 1.0)
 }
 
 \arguments{
   \item{formula}{A symbolic description of the model to be fit specifying the response variable and covariates.}
   \item{data}{A data frame in which to interpret the variables in \code{formula}.}
-  \item{bbar}{The diagonal elements of the prior variance matrix of \eqn{\beta}{beta}, a vector of length equal to the number of covariates.}
-  \item{dbar}{The diagonal elements of the prior variance matrix of \eqn{\delta}{delta}, a vector of length equal to the number of covariates.}
-  \item{ebar}{The shape parameter for the inverse gamma prior on \eqn{\sigma^2}{sigma^2}.}
-  \item{fbar}{The inverse scale parameter the inverse gamma prior on \eqn{\sigma^2}{sigma^2}.}
+  \item{a0}{The prior variance of \eqn{\alpha}{alpha}.}
+  \item{b0}{The prior variance of \eqn{\beta_j}{beta_j}.}
+  \item{c0}{The prior variance of \eqn{\gamma}{gamma}.}
+  \item{d0}{The prior variance of \eqn{\delta_j}{delta_j}.}
+  \item{e0}{The shape parameter for the inverse gamma prior on \eqn{\sigma^2}{sigma^2}.}
+  \item{f0}{The inverse scale parameter the inverse gamma prior on \eqn{\sigma^2}{sigma^2}.}
   \item{n.burnin}{Number of burn-in iterations of the sampler.}
   \item{n.mcmc}{Number of iterations of the sampler.}
   \item{n.thin}{Thinning interval.}
+  \item{tune}{Tuning parameter of Metropolis-Hastings step.}
 }
 
 \value{
    A list containing the following elements:
-   \item{beta}{The posterior draws for \eqn{\beta}{beta}.}
-   \item{delta}{The posterior draws for \eqn{\delta}{delta}.}
-   \item{sigma2}{The posterior draws for \eqn{\sigma^2}{sigma^2}.}
+   \item{alpha}{Posterior draws of \eqn{\alpha}{alpha} (coda mcmc object).}
+   \item{beta}{Posterior draws of \eqn{\beta}{beta} (coda mcmc object) .}
+   \item{gamma}{Posterior draws of \eqn{\gamma}{gamma} (coda mcmc object).}	
+   \item{delta}{Posterior draws of \eqn{\delta}{delta} (coda mcmc object).}
+   \item{sigma2}{Posterior draws of \eqn{\sigma^2}{sigma^2} (coda mcmc object).}
+   \item{yrep}{Posterior draws of replicated data sets \eqn{y^{rep}}.}
+   \item{acc}{Acceptance rate of the Metropolis-Hastings step.}
 }
 
 \details{
   The considered zero-inflated count model is given by
-  \deqn{y_i^* \sim \mathrm{Poisson}[\exp(\eta^*_i)],}{%
+  \deqn{y_i^* \sim \mathrm{Poisson}[\exp(\eta_i^*)],}{%
         y*_i ~ Poisson[exp(eta*_i)],}
-  \deqn{\eta^*_i = x_i'\beta + \varepsilon_i,\; \varepsilon_i \sim \mathrm{N}(0,\sigma^2),}{%
+  \deqn{\eta^*_i = \alpha + x_i'\beta + \varepsilon_i,\; \varepsilon_i \sim \mathrm{N}(0,\sigma^2),}{%
         eta*_i = x_i' * beta + epsilon_i, epsilon_i ~ N( 0, sigma^2 ),}
-  \deqn{d_i^* = x_i'\delta + \nu_i,\; \nu_i \sim \mathrm{N}(0,1),}{%
-        d*_i = x_i' * delta + nu_i, nu_i ~ N( 0, 1 ),}
+  \deqn{d_i^* = \gamma + x_i'\delta + \nu_i,\; \nu_i \sim \mathrm{N}(0,1),}{%
+        d*_i = x_i' * delta + nu_i, nu_i ~ N(0,1),}
   \deqn{y_i = 1(d_i^*>0)y_i^*,}{%
         y_i = 1(d*_i>0) y*_i,} 
   where \eqn{y_i} and \eqn{x_i} are observed. The assumed prior distributions are
-  \deqn{\beta \sim \mathrm{N}(0,\bar B) \quad \mathrm{with} \quad \bar B = \mathrm{diag}(\bar b_1,\ldots,\bar b_k),}{%
-        beta ~ N(0,Bbar) with Bbar = diag(bbar1,...,bbark),}
-  \deqn{\delta \sim \mathrm{N}(0,\bar D) \quad \mathrm{with} \quad \bar D = \mathrm{diag}(\bar d_1,\ldots,\bar d_k),}{%
-        delta ~ N(0,Dbar) with Dbar = diag(dbar1,...,dbark),}
-  \deqn{\sigma^2 \sim \textrm{Inv-Gamma}\left(\bar e,\bar f\right).}{%
-        sigma^2 ~ Inv-Gamma(ebar,fbar).}
+  \deqn{\alpha \sim \mathrm{N}(0,a_0),}{%
+         alpha ~ N(0,a0),}
+  \deqn{\beta_j \sim \mathrm{N}(0,b_0), \quad j=1,\ldots,k,}{%
+         beta_j ~ N(0,b0), j=1,...,k,}
+  \deqn{\gamma \sim \mathrm{N}(0,c_0),}{%
+         gamma ~ N(0,c0)}
+  \deqn{\delta_j \sim \mathrm{N}(0,d_0), \quad j=1,\ldots,k,}{%
+         delta_j ~ N(0,d0), j=1,...,k,}
+  \deqn{\sigma^2 \sim \textrm{Inv-Gamma}\left(e_0,f_0\right).}{%
+        sigma^2 ~ Inv-Gamma(e0,f0).}
 
-  The sampling algorithm developed by Jochmann (2009) is used.
-}
-
-\examples{
-# library( zic )
-# data( docvisits )
-
-# prior parameters and formula
-# bbar <- rep( 10.0, 16 )
-# dbar <- rep( 10.0, 16 )
-# ebar <- 3.0
-# fbar <- 2.0
-# formula <- docvisits ~ age + agesq + health + handicap + hdegree +
-#            married + schooling + hhincome + children + self +
-#            civil + bluec + employed + public + addon 
-
-# set seed and run MCMC sampler
-# set.seed(1)
-# results <- zic( formula, docvisits, bbar, dbar, ebar, fbar, 10000, 100000, 10 )
-
-# print posterior means for beta
-# apply( results$beta, 2, mean )
+  The sampling algorithm described in Jochmann (2012) is used.
 }
 
 \references{
-  Jochmann, M. (2009). ``What Belongs Where? Variable Selection for Zero-Inflated Count Models with an Application to the Demand for
-  Health Care''. Available at: \url{http://personal.strath.ac.uk/markus.jochmann}.
+  Jochmann, M. (2012). ``What Belongs Where? Variable Selection for Zero-Inflated Count Models with an Application to the Demand for
+  Health Care''. Available at: \url{http://www.staff.ncl.ac.uk/markus.jochmann}.
 }

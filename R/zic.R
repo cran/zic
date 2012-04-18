@@ -1,100 +1,79 @@
-zic <- function( formula, data, bbar, dbar, ebar, fbar, n.burnin, n.mcmc, n.thin )
+zic <- function( formula, data, a0, b0, c0, d0, e0, f0, n.burnin, n.mcmc, n.thin, tune = 1.0 )
 {
-  # data matrices and dimensions
+  # unsorted data matrices 
   mdl <- model.frame( formula, data )
   y <- model.response( mdl )
   X <- model.matrix( formula, mdl )
-  n <- dim(X)[1]
-  k <- dim(X)[2]
 
-  # initialize memories
-  n.save = n.mcmc / n.thin
-  betamem <- matrix( 0.0, n.save, k )
-  deltamem <- matrix( 0.0, n.save, k )
-  sigma2mem <- matrix( 0.0, n.save, 1 )
-  gammamem <- matrix( 0.0, n.save, k ) 
-  kappamem <- matrix( 0.0, n.save, k )
-    
-  # set up prior
-  m_bbar <- matrix( 0.0, k, 2 )
-  m_bbar[,2] <- bbar
-  m_dbar <- matrix( 0.0, k, 2 )
-  m_dbar[,2] <- dbar
-  pbar <- vector( "numeric", k )
-  qbar <- vector( "numeric", k )
+  # sort matrices	 
+  idx <- sort( y, index.return = TRUE )$ix
+  y <- y[idx]
+  X <- X[idx,]
 
-  # call C++ code
-  draws <- .C( "zic",
-               as.integer( y ), as.double( X ),
-               as.integer( n ), as.integer( k ),
-               as.integer( 0 ),
-               as.integer( n.burnin ), as.integer( n.mcmc ), as.integer( n.thin ),
-               as.double( m_bbar ), as.double( m_dbar ), as.double( ebar ), as.double( fbar ), as.double( pbar ), as.double( qbar ),
-               betamem = as.double( betamem ), deltamem = as.double( deltamem ), sigma2mem = as.double( sigma2mem ),
-               gammamem = as.double( gammamem ), kappamem = as.double( kappamem ),
-               PACKAGE="zic" )
+  # call C++
+  output <- .Call( "zic_sample", 
+                   y, X, 
+	           a0, b0, -9,-9,-9, e0, f0, 
+	           c0, d0, -9,-9,-9, 
+	           FALSE, n.burnin, n.mcmc, n.thin, tune, package = "zic" )
+ 
+  output$alpha <- mcmc( output$alpha )
+  output$beta <- mcmc( output$beta )	
+  output$gamma <- mcmc( output$gamma )	
+  output$delta <- mcmc( output$delta )	
+  output$sigma2 <- mcmc( output$sigma2 )	
 
-  # format results
-  res <- list( beta = matrix( draws$betamem, n.save, k ), delta = matrix( draws$deltamem, n.save, k ), sigma2 = draws$sigma2mem )
-  colnames(res$beta) <- all.vars( formula )
-  colnames(res$beta)[1] <- "const"
-  colnames(res$delta) <- all.vars( formula )
-  colnames(res$delta)[1] <- "const"
+  varnames(output$alpha) <- list( "alpha" )
+  varnames(output$beta) <- colnames(X)[2:dim(X)[2]]
+  varnames(output$gamma) <- list( "gamma" )
+  varnames(output$delta) <- colnames(X)[2:dim(X)[2]]
+  varnames(output$sigma2) <- list( "sigma2" )
+
+  return( output )
+}
+
+zic.ssvs <- function( formula, data, a0, g0.beta, h0.beta, nu0.beta, e0, f0, 
+                                     c0, g0.delta, h0.delta, nu0.delta, 
+                                     n.burnin, n.mcmc, n.thin, tune = 1.0 )
+{
+  # unsorted data matrices 
+  mdl <- model.frame( formula, data )
+  y <- model.response( mdl )
+  X <- model.matrix( formula, mdl )
+
+  # sort matrices	 
+  idx <- sort( y, index.return = TRUE )$ix
+  y <- y[idx]
+  X <- X[idx,]
+
+  # call C++	      
+  output <- .Call( "zic_sample", 
+                   y, X, 
+		   a0, -9, g0.beta, h0.beta, nu0.beta, e0, f0, 
+		   c0, -9, g0.delta, h0.delta, nu0.delta, 
+                   TRUE, n.burnin, n.mcmc, n.thin, tune, package = "zic" )
+
+  output$alpha <- mcmc( output$alpha )	   
+  output$beta <- mcmc( output$beta )	
+  output$gamma <- mcmc( output$gamma )	
+  output$delta <- mcmc( output$delta )	
+  output$sigma2 <- mcmc( output$sigma2 )	
+  output$I.beta <- mcmc( output$I.beta )	
+  output$I.delta <- mcmc( output$I.delta )	
+  output$omega.beta <- mcmc( output$omega.beta )
+  output$omega.delta <- mcmc( output$omega.delta )
+
+  varnames(output$alpha) <- list( "alpha" )
+  varnames(output$beta) <- colnames(X)[2:dim(X)[2]]
+  varnames(output$gamma) <- list( "gamma" )
+  varnames(output$delta) <- colnames(X)[2:dim(X)[2]]
+  varnames(output$sigma2) <- list( "sigma2" )
+  varnames(output$I.beta) <- colnames(X)[2:dim(X)[2]]
+  varnames(output$I.delta) <- colnames(X)[2:dim(X)[2]]
+  varnames(output$omega.beta) <- list( "omega.beta" )
+  varnames(output$omega.delta) <- list( "omega.delta" )
   
-  # return results
-  return( res )
+  return( output )
 }
 
-
-zic.ssvs <- function( formula, data, tausq0bar, tausq1bar, omegasq0bar, omegasq1bar, ebar, fbar, pbar, qbar, n.burnin, n.mcmc, n.thin )
-{
-  # data matrices and dimensions
-  mdl <- model.frame( formula, data )
-  y <- model.response( mdl )
-  X <- model.matrix( formula, mdl )
-  n <- dim(X)[1]
-  k <- dim(X)[2]
-
-  # initialize memories
-  n.save = n.mcmc / n.thin
-  betamem <- matrix( 0.0, n.save, k )
-  deltamem <- matrix( 0.0, n.save, k )
-  sigma2mem <- matrix( 0.0, n.save, 1 )
-  gammamem <- matrix( 0.0, n.save, k ) 
-  kappamem <- matrix( 0.0, n.save, k )
-
-  # set up prior
-  bbarm <- matrix( 0.0, k, 2 )
-  bbarm[,1] <- tausq0bar
-  bbarm[,2] <- tausq1bar
-  dbarm <- matrix( 0.0, k, 2 )
-  dbarm[,1] <- omegasq0bar
-  dbarm[,2] <- omegasq1bar
-
-  # call C++ code
-  draws <- .C( "zic",
-               as.integer( y ), as.double( X ),
-               as.integer( n ), as.integer( k ),
-               as.integer( 1 ),
-               as.integer( n.burnin ), as.integer( n.mcmc ), as.integer( n.thin ),
-               as.double( bbarm ), as.double( dbarm ), as.double( ebar ), as.double( fbar ), as.double( pbar ), as.double( qbar ),
-               betamem = as.double( betamem ), deltamem = as.double( deltamem ), sigma2mem = as.double( sigma2mem ),
-               gammamem = as.double( gammamem ), kappamem = as.double( kappamem ),
-               PACKAGE="zic" )
-
-  # return results
-  res <- list( beta = matrix( draws$betamem, n.save, k ), delta = matrix( draws$deltamem, n.save, k ), sigma2 = draws$sigma2mem, gamma = matrix( draws$gammamem, n.save, k ), kappa = matrix( draws$kappamem, n.save, k ) )
-
-  colnames(res$beta) <- all.vars( formula )
-  colnames(res$beta)[1] <- "const"
-  colnames(res$delta) <- all.vars( formula )
-  colnames(res$delta)[1] <- "const"
-  colnames(res$gamma) <- all.vars( formula )
-  colnames(res$gamma)[1] <- "const"
-  colnames(res$kappa) <- all.vars( formula )
-  colnames(res$kappa)[1] <- "const"
-
-  #return results
-  return( res )
-}
 

@@ -1,2 +1,2 @@
 useDynLib(zic)
-export(zic, zic.ssvs)
+exportPattern("^[[:alpha:]]+")
