@@ -16,7 +16,14 @@
   \describe{
     \item{docvisits}{number of doctor visits in last 3 months}         
     \item{age}{age}                                              
-    \item{agesq}{age squared / 1000}                               
+    \item{agesq}{age squared / 1000}
+    \item{age30}{1 if age >= 30}
+    \item{age35}{1 if age >= 35}
+    \item{age40}{1 if age >= 40}
+    \item{age45}{1 if age >= 45}
+    \item{age50}{1 if age >= 50}
+    \item{age55}{1 if age >= 55}
+    \item{age60}{1 if age >= 60}
     \item{health}{health satisfaction, 0 (low) - 10 (high)}         
     \item{handicap}{1 if handicapped, 0 otherwise}                    
     \item{hdegree}{degree of handicap in percentage points}          

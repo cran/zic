@@ -8,7 +8,7 @@ using namespace arma;
 
 struct SpikeSlabPrior
 {
-  double Va, Vb, g, h, nu, e, f;
+  double Va, Vb, g, h, nu, r, s, e, f;
   bool svs;
 };
 

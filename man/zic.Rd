@@ -10,7 +10,7 @@
 
 \usage{
 zic(formula, data, a0, b0, c0, d0, e0, f0, 
-    n.burnin, n.mcmc, n.thin, tune = 1.0)
+    n.burnin, n.mcmc, n.thin, tune = 1.0, scale = TRUE)
 }
 
 \arguments{
@@ -26,6 +26,7 @@ zic(formula, data, a0, b0, c0, d0, e0, f0,
   \item{n.mcmc}{Number of iterations of the sampler.}
   \item{n.thin}{Thinning interval.}
   \item{tune}{Tuning parameter of Metropolis-Hastings step.}
+  \item{scale}{If true, all covariates (except binary variables) are rescaled by dividing by their respective standard errors.}
 }
 
 \value{
@@ -35,7 +36,6 @@ zic(formula, data, a0, b0, c0, d0, e0, f0,
    \item{gamma}{Posterior draws of \eqn{\gamma}{gamma} (coda mcmc object).}	
    \item{delta}{Posterior draws of \eqn{\delta}{delta} (coda mcmc object).}
    \item{sigma2}{Posterior draws of \eqn{\sigma^2}{sigma^2} (coda mcmc object).}
-   \item{yrep}{Posterior draws of replicated data sets \eqn{y^{rep}}.}
    \item{acc}{Acceptance rate of the Metropolis-Hastings step.}
 }
 
@@ -52,12 +52,12 @@ zic(formula, data, a0, b0, c0, d0, e0, f0,
   where \eqn{y_i} and \eqn{x_i} are observed. The assumed prior distributions are
   \deqn{\alpha \sim \mathrm{N}(0,a_0),}{%
          alpha ~ N(0,a0),}
-  \deqn{\beta_j \sim \mathrm{N}(0,b_0), \quad j=1,\ldots,k,}{%
-         beta_j ~ N(0,b0), j=1,...,k,}
+  \deqn{\beta_k \sim \mathrm{N}(0,b_0), \quad k=1,\ldots,K,}{%
+         beta_k ~ N(0,b0), k=1,...,K,}
   \deqn{\gamma \sim \mathrm{N}(0,c_0),}{%
          gamma ~ N(0,c0)}
-  \deqn{\delta_j \sim \mathrm{N}(0,d_0), \quad j=1,\ldots,k,}{%
-         delta_j ~ N(0,d0), j=1,...,k,}
+  \deqn{\delta_k \sim \mathrm{N}(0,d_0), \quad k=1,\ldots,K,}{%
+         delta_k ~ N(0,d0), k=1,...,K,}
   \deqn{\sigma^2 \sim \textrm{Inv-Gamma}\left(e_0,f_0\right).}{%
         sigma^2 ~ Inv-Gamma(e0,f0).}
 

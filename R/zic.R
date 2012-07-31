@@ -1,4 +1,20 @@
-zic <- function( formula, data, a0, b0, c0, d0, e0, f0, n.burnin, n.mcmc, n.thin, tune = 1.0 )
+is.dummy <- function( v )
+{
+  ( sum( (v!=0) & (v!=1) ) == 0 ) &
+  ( sum( v!=1 ) != 0 )
+}
+
+get.scale <- function( X )
+{
+  s.scale <- apply( X, 2, sd )
+  s.scale[1] <- 1.0
+  for( i in 2:dim(X)[2] )
+    if( is.dummy( X[,i] ) )
+      s.scale[i] = 1.0	 
+  return( s.scale )
+}
+
+zic <- function( formula, data, a0, b0, c0, d0, e0, f0, n.burnin, n.mcmc, n.thin, tune = 1.0, scale = TRUE ) 
 {
   # unsorted data matrices 
   mdl <- model.frame( formula, data )
@@ -10,11 +26,17 @@ zic <- function( formula, data, a0, b0, c0, d0, e0, f0, n.burnin, n.mcmc, n.thin
   y <- y[idx]
   X <- X[idx,]
 
+  if( scale )
+    {
+      s.scale <- get.scale( X )
+      X <- scale( X, center = FALSE, scale = s.scale )
+    }
+
   # call C++
   output <- .Call( "zic_sample", 
                    y, X, 
-	           a0, b0, -9,-9,-9, e0, f0, 
-	           c0, d0, -9,-9,-9, 
+	           a0, b0, -9, -9, -9, -9, -9, e0, f0, 
+	           c0, d0, -9, -9, -9, -9, -9,
 	           FALSE, n.burnin, n.mcmc, n.thin, tune, package = "zic" )
  
   output$alpha <- mcmc( output$alpha )
@@ -29,12 +51,17 @@ zic <- function( formula, data, a0, b0, c0, d0, e0, f0, n.burnin, n.mcmc, n.thin
   varnames(output$delta) <- colnames(X)[2:dim(X)[2]]
   varnames(output$sigma2) <- list( "sigma2" )
 
+  if( scale )
+    {
+      output$s.scale <- s.scale[2:length(s.scale)]
+    }
+ 
   return( output )
 }
 
-zic.ssvs <- function( formula, data, a0, g0.beta, h0.beta, nu0.beta, e0, f0, 
-                                     c0, g0.delta, h0.delta, nu0.delta, 
-                                     n.burnin, n.mcmc, n.thin, tune = 1.0 )
+zic.svs <- function( formula, data, a0, g0.beta, h0.beta, nu0.beta, r0.beta, s0.beta, e0, f0, 
+                                    c0, g0.delta, h0.delta, nu0.delta, r0.delta, s0.delta, 
+                                    n.burnin, n.mcmc, n.thin, tune = 1.0, scale = TRUE )
 {
   # unsorted data matrices 
   mdl <- model.frame( formula, data )
@@ -46,11 +73,17 @@ zic.ssvs <- function( formula, data, a0, g0.beta, h0.beta, nu0.beta, e0, f0,
   y <- y[idx]
   X <- X[idx,]
 
+  if( scale )
+    {
+      s.scale <- get.scale( X )
+      X <- scale( X, center = FALSE, scale = s.scale )
+    }
+  
   # call C++	      
   output <- .Call( "zic_sample", 
                    y, X, 
-		   a0, -9, g0.beta, h0.beta, nu0.beta, e0, f0, 
-		   c0, -9, g0.delta, h0.delta, nu0.delta, 
+		   a0, -9, g0.beta, h0.beta, nu0.beta, r0.beta, s0.beta, e0, f0, 
+		   c0, -9, g0.delta, h0.delta, nu0.delta, r0.delta, s0.delta,
                    TRUE, n.burnin, n.mcmc, n.thin, tune, package = "zic" )
 
   output$alpha <- mcmc( output$alpha )	   
@@ -72,6 +105,11 @@ zic.ssvs <- function( formula, data, a0, g0.beta, h0.beta, nu0.beta, e0, f0,
   varnames(output$I.delta) <- colnames(X)[2:dim(X)[2]]
   varnames(output$omega.beta) <- list( "omega.beta" )
   varnames(output$omega.delta) <- list( "omega.delta" )
+
+  if( scale )
+    {
+      output$s.scale <- s.scale[2:length(s.scale)]
+    }
   
   return( output )
 }

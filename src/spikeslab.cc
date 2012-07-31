@@ -19,7 +19,7 @@ void SpikeSlabParameter::update( const vec& y, const mat& X, const double sigma2
   const mat V = inv( X.t() * X / sigma2 + pVinv );
   const vec m = V * ( X.t() * y / sigma2 );
   beta = rnd.mnormal( m, V );  
-  
+
   if( prior.svs )
     {
       kappa_update( rnd );
@@ -40,7 +40,8 @@ void SpikeSlabParameter::tau_update( Rnd& rnd )
     {
       double bsq = beta(i+1) * beta(i+1);
       double p0 = ( 1.0 - omega ) / sqrt( prior.nu ) * exp( -0.5 * bsq / ( prior.nu * kappa(i) ) );
-      double p1 = omega * exp( -0.5 * bsq / kappa(i) );
+      double p1 =         omega                      * exp( -0.5 * bsq /              kappa(i)   );
+
       if ( p1 / ( p0+p1 ) > rnd.uniform() )
 	tau(i) = 1.0;
       else
@@ -51,7 +52,7 @@ void SpikeSlabParameter::tau_update( Rnd& rnd )
 void SpikeSlabParameter::omega_update( Rnd& rnd )
 {
   int n_in = accu( tau > 0.99 );
-  omega = rnd.beta( 1.0 + n_in, 1.0 + k - n_in );
+  omega = rnd.beta( n_in + prior.r, k - n_in + prior.s );
 }
 
 vec SpikeSlabParameter::operator()( void )

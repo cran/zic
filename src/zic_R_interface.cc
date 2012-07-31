@@ -2,8 +2,10 @@
 #include "zicmodel.h"
 
 extern "C" SEXP zic_sample( SEXP _y, SEXP _X, 
-			    SEXP _a0, SEXP _b0, SEXP _gbeta0,  SEXP _hbeta0, SEXP _nubeta0, SEXP _e0, SEXP _f0, 
-			    SEXP _c0, SEXP _d0, SEXP _gdelta0, SEXP _hdelta0, SEXP _nudelta0,
+			    SEXP _a0, SEXP _b0, SEXP _gbeta0,  SEXP _hbeta0, SEXP _nubeta0, 
+			    SEXP _rbeta0, SEXP _sbeta0, SEXP _e0, SEXP _f0, 
+			    SEXP _c0, SEXP _d0, SEXP _gdelta0, SEXP _hdelta0, SEXP _nudelta0, 
+			    SEXP _rdelta0, SEXP _sdelta0,
 			    SEXP _svs0, SEXP _nburnin, SEXP _nmcmc, SEXP _nthin, SEXP _tune ) 
 {
   try 
@@ -24,6 +26,8 @@ extern "C" SEXP zic_sample( SEXP _y, SEXP _X,
        betaprior.g  = Rcpp::as<double>( _gbeta0 );
        betaprior.h  = Rcpp::as<double>( _hbeta0 );
        betaprior.nu = Rcpp::as<double>( _nubeta0 );
+       betaprior.r  = Rcpp::as<double>( _rbeta0 );
+       betaprior.s  = Rcpp::as<double>( _sbeta0 );
        betaprior.e   = Rcpp::as<double>( _e0 );
        betaprior.f   = Rcpp::as<double>( _f0 );
        betaprior.svs = Rcpp::as<bool>( _svs0 );
@@ -33,6 +37,8 @@ extern "C" SEXP zic_sample( SEXP _y, SEXP _X,
        deltaprior.g    = Rcpp::as<double>( _gdelta0 );
        deltaprior.h    = Rcpp::as<double>( _hdelta0 );
        deltaprior.nu   = Rcpp::as<double>( _nudelta0 );
+       deltaprior.r    = Rcpp::as<double>( _rdelta0 );
+       deltaprior.s    = Rcpp::as<double>( _sdelta0 );
        deltaprior.e    = -9.9;
        deltaprior.f    = -9.9;
        deltaprior.svs  = Rcpp::as<bool>( _svs0 );
@@ -46,13 +52,15 @@ extern "C" SEXP zic_sample( SEXP _y, SEXP _X,
        const double tune = Rcpp::as<double>( _tune );
               
        // memories
-       vec alphamem( nmcmc/nthin ), gammamem( nmcmc/nthin ), sigma2mem( nmcmc/nthin ), omegabetamem( nmcmc/nthin ), omegadeltamem( nmcmc/nthin ), accmem( nmcmc/nthin );
+       vec alphamem( nmcmc/nthin ), gammamem( nmcmc/nthin ), sigma2mem( nmcmc/nthin ), 
+           omegabetamem( nmcmc/nthin ), omegadeltamem( nmcmc/nthin ), accmem( nmcmc/nthin );
        mat betamem( nmcmc/nthin, k ), deltamem( nmcmc/nthin, k ); 
-       imat Ibetamem( nmcmc/nthin, k ), Ideltamem( nmcmc/nthin, k ), yrepmem( nmcmc/nthin, n );
+       imat Ibetamem( nmcmc/nthin, k ), Ideltamem( nmcmc/nthin, k );
             
        // initialize model and sample
        ZicModel m( y, X, betaprior, deltaprior, tune );
-       m.sample( nburnin, nmcmc, nthin, alphamem, betamem, gammamem, deltamem, sigma2mem, Ibetamem, Ideltamem, omegabetamem, omegadeltamem, yrepmem, accmem );
+       m.sample( nburnin, nmcmc, nthin, alphamem, betamem, gammamem, deltamem, sigma2mem, Ibetamem, Ideltamem, 
+                 omegabetamem, omegadeltamem, accmem );
        
        // return memories
        Rcpp::List memlist;
@@ -68,8 +76,7 @@ extern "C" SEXP zic_sample( SEXP _y, SEXP _X,
 		                      Rcpp::Named( "I.delta" )     = Ideltamem,
 		                      Rcpp::Named( "omega.beta" )  = omegabetamem,
 		                      Rcpp::Named( "omega.delta" ) = omegadeltamem,
-		                      Rcpp::Named( "yrep" )        = yrepmem, 
-		                      Rcpp::Named( "acc" )         = accmem         );
+				      Rcpp::Named( "acc" )         = accmem         );
 	 }
        else
          {
@@ -78,8 +85,7 @@ extern "C" SEXP zic_sample( SEXP _y, SEXP _X,
 	                              Rcpp::Named( "gamma" )       = gammamem,
 		                      Rcpp::Named( "delta" )       = deltamem,
                                       Rcpp::Named( "sigma2" )      = sigma2mem,
-			              Rcpp::Named( "yrep" )        = yrepmem, 
-		                      Rcpp::Named( "acc" )         = accmem         );
+				      Rcpp::Named( "acc" )         = accmem         );
 	 }
      } 
   catch( std::exception &ex ) 
