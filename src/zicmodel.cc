@@ -1,9 +1,9 @@
 #include "zicmodel.h"
 
-ZicModel::ZicModel( const ivec& _y, const mat& _X, 
-                    const SpikeSlabPrior& _betaprior, const SpikeSlabPrior& _deltaprior, const double _tune )
-  : y(_y), X(_X), n(y.n_rows), n0(accu(y==0)), k(X.n_cols-1), eta(zeros<vec>(n)), dstar(zeros<vec>(n)),
-    beta(X.n_cols-1,_betaprior), delta(X.n_cols-1,_deltaprior), sigma2(1.0), tune(_tune), betaprior(_betaprior), deltaprior(_deltaprior)
+ZicModel::ZicModel( const ivec& Ay, const mat& AX, 
+                    const SpikeSlabPrior& Abetaprior, const SpikeSlabPrior& Adeltaprior, const double Atune )
+  : y(Ay), X(AX), n(y.n_rows), n0(accu(y==0)), k(X.n_cols-1), eta(zeros<vec>(n)), dstar(zeros<vec>(n)),
+    beta(X.n_cols-1,Abetaprior), delta(X.n_cols-1,Adeltaprior), sigma2(1.0), tune(Atune), betaprior(Abetaprior), deltaprior(Adeltaprior)
 {
 }; 
  

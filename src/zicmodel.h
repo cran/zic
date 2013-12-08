@@ -9,12 +9,10 @@
 
 using namespace arma;
 
-
-
 class ZicModel
 {
 public:
-  ZicModel( const ivec& _y, const mat& _X, const SpikeSlabPrior& _betaprior, const SpikeSlabPrior& _deltaprior, const double _tune );
+  ZicModel( const ivec& Ay, const mat& AX, const SpikeSlabPrior& Abetaprior, const SpikeSlabPrior& Adeltaprior, const double Atune );
   void sample( const int nburnin, const int nmcmc, const int nthin, 
                vec& alphamem, mat& betamem, vec& gammamem, mat& deltamem, vec& sigma2mem, imat& Ibetamem, imat& Ideltamem, 
                vec& omegabetamem, vec& omegadeltamem, vec& accmem );

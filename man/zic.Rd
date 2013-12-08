@@ -61,10 +61,10 @@ zic(formula, data, a0, b0, c0, d0, e0, f0,
   \deqn{\sigma^2 \sim \textrm{Inv-Gamma}\left(e_0,f_0\right).}{%
         sigma^2 ~ Inv-Gamma(e0,f0).}
 
-  The sampling algorithm described in Jochmann (2012) is used.
+  The sampling algorithm described in Jochmann (2013) is used.
 }
 
 \references{
-  Jochmann, M. (2012). ``What Belongs Where? Variable Selection for Zero-Inflated Count Models with an Application to the Demand for
-  Health Care''. Available at: \url{http://www.staff.ncl.ac.uk/markus.jochmann}.
+  Jochmann, M. (2013). ``What Belongs Where? Variable Selection for Zero-Inflated Count Models with an Application to the Demand for
+  Health Care'', \emph{Computational Statistics}, 28, 1947--1964.
 }

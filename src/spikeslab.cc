@@ -1,7 +1,7 @@
 #include "spikeslab.h"
 
-SpikeSlabParameter::SpikeSlabParameter( const int _k, const SpikeSlabPrior& _prior )
-  : k(_k), beta(zeros<vec>(k+1)), tau(ones<vec>(k)), kappa(ones<vec>(k)), omega(0.5), pVinv(zeros<mat>(k+1,k+1)), prior(_prior)
+SpikeSlabParameter::SpikeSlabParameter( const int Ak, const SpikeSlabPrior& Aprior )
+  : k(Ak), beta(zeros<vec>(k+1)), tau(ones<vec>(k)), kappa(ones<vec>(k)), omega(0.5), pVinv(zeros<mat>(k+1,k+1)), prior(Aprior)
 {
   pVinv(0,0) = 1.0 / prior.Va;
   for( int i=1; i<=k; i++ )

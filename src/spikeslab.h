@@ -15,7 +15,7 @@ struct SpikeSlabPrior
 class SpikeSlabParameter
 {
 public:
-  SpikeSlabParameter( const int _k, const SpikeSlabPrior& _prior );
+  SpikeSlabParameter( const int Ak, const SpikeSlabPrior& Aprior );
 
   void update( const vec& y, const mat& X, const double sigma2, Rnd& rnd );  
   void kappa_update( Rnd& );
