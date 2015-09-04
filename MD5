@@ -1,11 +1,11 @@
-006c507c20cec9445001a701779fd0f5 *DESCRIPTION
-0ea61682e15f9a95d2d33f5bc7c7a011 *NAMESPACE
+807a80150478beae9a3b5bc5b3fc11a4 *DESCRIPTION
+a87eaa91890ba0b304822408c992fc63 *NAMESPACE
 8a94effeef58630051c170557a3435a6 *R/zic.R
 bece06bc55aea6cdeea4118d4fbbc9ad *data/docvisits.rda
 8a796b8d03d10a51aa31cf50632fb3e1 *man/docvisits.Rd
 c0898220489f123a811bfa9f9367f892 *man/zic-internal.Rd
-d6ed53ca5b3521b26c9273b17ba31fc4 *man/zic.Rd
-8a32b6b0c80ce6c8adb0f804fd1a7d96 *man/zic.svs.Rd
+d8a90a428ddad62ace7dc31603271f7d *man/zic.Rd
+8ef17674ba0303d99067d41b29fc7072 *man/zic.svs.Rd
 489b262d4f81136a32f0bb09936fe53e *src/Makevars
 a73031cbe7d6aaf0bd22e20f6526977d *src/Makevars.win
 bbe3a78964621b8e6a35b75d623fa26d *src/random_R.cc

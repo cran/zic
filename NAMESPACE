@@ -1,2 +1,5 @@
 useDynLib(zic)
+import(Rcpp)
+import(coda)
+importFrom(stats, model.frame, model.matrix, model.response, sd)
 exportPattern("^[[:alpha:]]+")

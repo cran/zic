@@ -95,3 +95,12 @@ zic.svs(formula, data,
   Health Care'', \emph{Computational Statistics}, 28, 1947--1964.
 }
 
+\examples{
+\dontrun{
+data( docvisits )
+mdl <- docvisits ~ age + agesq + health + handicap + hdegree + married + schooling +
+                    hhincome + children + self + civil + bluec + employed + public + addon
+post <- zic.ssvs( mdl, docvisits,
+                  10.0, 5.0, 5.0, 1.0e-04, 2.0, 2.0, 1.0, 1.0,
+                  10.0, 5.0, 5.0, 1.0e-04, 2.0, 2.0,
+                  1000, 10000, 10, 1.0, TRUE )}}

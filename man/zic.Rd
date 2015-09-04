@@ -64,6 +64,14 @@ zic(formula, data, a0, b0, c0, d0, e0, f0,
   The sampling algorithm described in Jochmann (2013) is used.
 }
 
+\examples{
+\dontrun{
+data( docvisits )
+mdl <- docvisits ~ age + agesq + health + handicap + hdegree + married + schooling +
+                    hhincome + children + self + civil + bluec + employed + public + addon
+post <- zic( f, docvisits, 10.0, 10.0, 10.0, 10.0, 1.0, 1.0, 1000, 10000, 10, 1.0, TRUE )}
+}
+
 \references{
   Jochmann, M. (2013). ``What Belongs Where? Variable Selection for Zero-Inflated Count Models with an Application to the Demand for
   Health Care'', \emph{Computational Statistics}, 28, 1947--1964.
