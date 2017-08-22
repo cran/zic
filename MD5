@@ -1,6 +1,6 @@
-807a80150478beae9a3b5bc5b3fc11a4 *DESCRIPTION
-a87eaa91890ba0b304822408c992fc63 *NAMESPACE
-8a94effeef58630051c170557a3435a6 *R/zic.R
+6b83302f7a2b910322a97e54cfa4d43a *DESCRIPTION
+b5eda7a0967c6472af842d63f0bde1d3 *NAMESPACE
+e713a9ba5e0721c374a666d18bb69304 *R/zic.R
 bece06bc55aea6cdeea4118d4fbbc9ad *data/docvisits.rda
 8a796b8d03d10a51aa31cf50632fb3e1 *man/docvisits.Rd
 c0898220489f123a811bfa9f9367f892 *man/zic-internal.Rd
@@ -10,6 +10,7 @@ d8a90a428ddad62ace7dc31603271f7d *man/zic.Rd
 a73031cbe7d6aaf0bd22e20f6526977d *src/Makevars.win
 bbe3a78964621b8e6a35b75d623fa26d *src/random_R.cc
 c03b183fcd92c36e31e44b0820392891 *src/random_R.h
+7c22b1b500cab25872924e218f1645f5 *src/registerDynamicSymbol.c
 4a58a46236f64fedec30203c63e329cb *src/spikeslab.cc
 f2d103e1a5a9be1e330f14ff617c4d03 *src/spikeslab.h
 e3d9647fc2f21e354ecf9efa78019527 *src/zic_R_interface.cc

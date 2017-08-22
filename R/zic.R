@@ -37,7 +37,7 @@ zic <- function( formula, data, a0, b0, c0, d0, e0, f0, n.burnin, n.mcmc, n.thin
                    y, X, 
 	           a0, b0, -9, -9, -9, -9, -9, e0, f0, 
 	           c0, d0, -9, -9, -9, -9, -9,
-	           FALSE, n.burnin, n.mcmc, n.thin, tune, package = "zic" )
+	           FALSE, n.burnin, n.mcmc, n.thin, tune, PACKAGE = "zic" )
  
   output$alpha <- mcmc( output$alpha )
   output$beta <- mcmc( output$beta )	
@@ -84,7 +84,7 @@ zic.svs <- function( formula, data, a0, g0.beta, h0.beta, nu0.beta, r0.beta, s0.
                    y, X, 
 		   a0, -9, g0.beta, h0.beta, nu0.beta, r0.beta, s0.beta, e0, f0, 
 		   c0, -9, g0.delta, h0.delta, nu0.delta, r0.delta, s0.delta,
-                   TRUE, n.burnin, n.mcmc, n.thin, tune, package = "zic" )
+                   TRUE, n.burnin, n.mcmc, n.thin, tune, PACKAGE = "zic" )
 
   output$alpha <- mcmc( output$alpha )	   
   output$beta <- mcmc( output$beta )	

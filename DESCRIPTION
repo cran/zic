@@ -1,6 +1,6 @@
 Package: zic
-Version: 0.9
-Date: 2015-09-03
+Version: 0.9.1
+Date: 2017-08-22
 Title: Bayesian Inference for Zero-Inflated Count Models
 Author: Markus Jochmann <markus.jochmann@ncl.ac.uk>
 Maintainer: Markus Jochmann <markus.jochmann@ncl.ac.uk>
@@ -14,6 +14,6 @@ Depends: R (>= 3.0.2)
 Imports: Rcpp (>= 0.11.0), coda (>= 0.14-2)
 LinkingTo: Rcpp, RcppArmadillo
 NeedsCompilation: yes
-Packaged: 2015-09-03 17:20:17 UTC; markus
+Packaged: 2017-08-22 12:01:28 UTC; markus
 Repository: CRAN
-Date/Publication: 2015-09-04 01:07:45
+Date/Publication: 2017-08-22 12:26:54 UTC

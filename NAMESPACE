@@ -1,4 +1,4 @@
-useDynLib(zic)
+useDynLib(zic, .registration = TRUE)
 import(Rcpp)
 import(coda)
 importFrom(stats, model.frame, model.matrix, model.response, sd)
